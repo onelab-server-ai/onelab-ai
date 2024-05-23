@@ -108,7 +108,7 @@
                                                         </a>
                                                     </div>
                                                     <!-- 로그인 되어있을 경우 댓글 창 시작 -->
-                                                    <form action="{% url 'ai:reviewpredict' %}" enctype="multipart/form-data" method="post" >
+                                                    <form action="{% url 'community:detail' %}" enctype="multipart/form-data" method="post" >
                                                         {% csrf_token %}
                                                         <div class="comment-user-wrapper-main">
                                                             <div class="comment-write-form">
@@ -132,7 +132,7 @@
                                                                 </div>
                                                             </div>
                                                         
-                                                            <button class="comment-ok-btn" id="reply-write">
+                                                            <button class="comment-ok-btn" id="reply-write" type="button">
                                                                 <span class="comment-ok-text">등록</span>
                                                             </button>
                                                         </form>
@@ -166,9 +166,8 @@
                         </div>
                     </div>
                      
-                </div>
+        
                 <!-- 푸터 -->
-            </div>
            
             <div class="floating-buttons-container">
                 <button type="button" class="float-top-btn">

@@ -7,45 +7,99 @@ const ul = document.querySelector("#replies-wrap ul");
 const modalContainer = document.getElementById("confirm-modal-container");
 
 // 댓글 목록을 가져와서 화면에 표시하는 함수
+// const showList = (replies) => {
+//     let text = ``;
+//
+//     replies.forEach((reply) => {
+//         console.log(reply.result)
+//         if(reply.result !== 'comment') {
+//             text += `
+//             <li>
+//                 <div>
+//                     <div class="comment-user-wrapper-container">
+//                         <div class="comment-user-wrapper-avatar">
+//                             <!-- a태그 클릭시 해당 댓글 작성 회원의 마이페이지 이동 -->
+// <!--                            <a href="">-->
+// <!--                                <div class="avatar" style="width: 36px; height: 36px;">-->
+// <!--                                    <span class="avatar-has-image">-->
+// <!--                                        <img src="/upload/${reply.member_path}" width="15px">-->
+// <!--                                    </span>-->
+// <!--                                </div>-->
+// <!--                            </a>-->
+//                         </div>
+//                         <div class="comment-user-wrapper-main">
+//                             <div class="comment-user-info-container">
+//                                 <span class="comment-user-info-name">
+//                                     <a href="">
+//                                         <strong>${reply.member_name}</strong>
+//                                     </a>
+//                                 </span>
+//                                 <span class="comment-user-info-date">${timeForToday(reply.created_date)}</span>
+//                                 <button class="siren-btn" id="sign" data-reply-id="${reply.id}" type="button" >신고</button>
+//                             </div>
+//                             <div>
+//                                 <div class="comment-text-content-container">
+//                                     <div class="comment-text-content-box">
+//                                         <span class="title">${reply.reply_content}</span>
+//                                     </div>
+//                                 </div>
+//                             </div>
+//                         </div>
+//                     </div>
+//                 </div>
+//             </li>
+//         `;
+//         }
+//     });
+//     return text;
+// }
+
 const showList = (replies) => {
     let text = ``;
     replies.forEach((reply) => {
-        text += `
-            <li>
-                <div>
-                    <div class="comment-user-wrapper-container">
-                        <div class="comment-user-wrapper-avatar">
-                            <!-- a태그 클릭시 해당 댓글 작성 회원의 마이페이지 이동 -->
-<!--                            <a href="">-->
-<!--                                <div class="avatar" style="width: 36px; height: 36px;">-->
-<!--                                    <span class="avatar-has-image">-->
-<!--                                        <img src="/upload/${reply.member_path}" width="15px">-->
-<!--                                    </span>-->
-<!--                                </div>-->
-<!--                            </a>-->
-                        </div>
-                        <div class="comment-user-wrapper-main">
-                            <div class="comment-user-info-container">
-                                <span class="comment-user-info-name">
-                                    <a href="">
-                                        <strong>${reply.member_name}</strong>
-                                    </a>
-                                </span>
-                                <span class="comment-user-info-date">${timeForToday(reply.created_date)}</span>
-                                <button class="siren-btn" id="sign" data-reply-id="${reply.id}" type="button" >신고</button>
+        console.log(`replies.results: ${replies.results}`);
+        console.log(`replies.result: ${replies.result}`);
+        console.log(`reply: ${reply}`);
+        console.log(`reply.results: ${reply.results}`);
+        console.log(`reply.result: ${reply.result}`);
+        if (reply.result !== 'comment') {// result가 'comment'가 아닌 경우에만 댓글을 표시
+            text += `
+                <li>
+                    <div>
+                        <div class="comment-user-wrapper-container">
+                            <div class="comment-user-wrapper-avatar">
+                                <!-- a태그 클릭시 해당 댓글 작성 회원의 마이페이지 이동 -->
+    <!--                            <a href="">-->
+    <!--                                <div class="avatar" style="width: 36px; height: 36px;">-->
+    <!--                                    <span class="avatar-has-image">-->
+    <!--                                        <img src="/upload/${reply.member_path}" width="15px">-->
+    <!--                                    </span>-->
+    <!--                                </div>-->
+    <!--                            </a>-->
                             </div>
-                            <div>
-                                <div class="comment-text-content-container">
-                                    <div class="comment-text-content-box"> 
-                                        <span class="title">${reply.reply_content}</span>
+                            <div class="comment-user-wrapper-main">
+                                <div class="comment-user-info-container">
+                                    <span class="comment-user-info-name">
+                                        <a href="">
+                                            <strong>${reply.member_name}</strong>
+                                        </a>
+                                    </span>
+                                    <span class="comment-user-info-date">${timeForToday(reply.created_date)}</span>
+                                    <button class="siren-btn" id="sign" data-reply-id="${reply.id}" type="button" >신고</button>
+                                </div>
+                                <div>
+                                    <div class="comment-text-content-container">
+                                        <div class="comment-text-content-box"> 
+                                            <span class="title">${reply.reply_content}</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </li>
-        `;
+                </li>
+            `;
+        }
     });
     return text;
 }
@@ -53,6 +107,8 @@ const showList = (replies) => {
 
 // 댓글 목록을 가져와서 화면에 표시하는 함수
 const displayReplies = (replies) => {
+
+
     const html = showList(replies);
     ul.innerHTML = html;
 
@@ -73,9 +129,8 @@ const csrfToken = getCSRFToken();
 
 const addClickEventToButtons = (btn) => {
     btn.addEventListener('click', async (e) => {
-
-        console.log(e.target);
-        const replyId = e.target.getAttribute('data-reply-id');
+        // console.log(e.target);
+        // const replyId = e.target.getAttribute('data-reply-id');
         console.log(replyId)
         const response = await fetch("/ai/review/", {
             method: 'POST',
@@ -158,7 +213,8 @@ writeButton.addEventListener("click", async (e) => {
     if (replies.length !== 0){
         moreButton.style.display = "";
     }
-    const replyContents = document.getElementById("reply-content").value;
+
+    const replyContents = document.getElementById("reply-content");
     // const replyElementValue = replyContents.value;
 
     const response = await fetch("/ai/reviewpredict/", {
@@ -168,22 +224,63 @@ writeButton.addEventListener("click", async (e) => {
             "X-CSRFToken": csrf_token,
         },
         body: JSON.stringify({
-            reply_content: replyContents
+            reply_content: replyContents.value,
+            community_id: community_id
 
         })
     });
-    const results = await response.json();
-    console.log(results);
 
-    // 서버로부터 'comment' 응답을 받으면 댓글을 삭제합니다.
-    if (results === 'comment') {
-
+    // 댓글 내용이 'comment'인 경우 처리하지 않음
+    if (replyContents === 'comment') {
         // 필요에 따라 추가적인 작업 수행
-        alert('댓글이 삭제되었습니다.');
+        alert('댓글을 작성할 수 없습니다.');
+        return;
     }
+    const results = await response.json();
+    console.log(results.reply_content)
+
 
     replyContents.value = "";
 });
+
+
+// writeButton.addEventListener("click", async (e) => {
+//     const replyContent = document.getElementById("reply-content").value;
+//
+//     // 서버로 댓글 등록 요청을 보냅니다.
+//     const response = await fetch("/ai/reviewpredict/", {
+//         method: 'POST',
+//         headers: {
+//             "Content-Type": "application/json;charset=utf-8",
+//             "X-CSRFToken": csrf_token,
+//         },
+//         body: JSON.stringify({
+//             reply_content: replyContent,
+//             community_id: community_id
+//         })
+//     });
+//
+//     // 서버로부터의 응답을 확인합니다.
+//     const results = await response.json();
+//
+//     // 결과가 댓글 내용인 경우에만 alert을 띄웁니다.
+//     if (results && results.reply_content === 'comment') {
+//         alert('댓글을 작성할 수 없습니다.');
+//         return;
+//     }
+//
+//     // 댓글 내용이 'comment'가 아닌 경우에는 정상적으로 댓글이 등록되었다고 가정하고 페이지를 갱신합니다.
+//     page = 1;
+//     const text = await replyService.getList(community_id, page, showList);
+//     ul.innerHTML = text;
+//     const replies = await replyService.getList(community_id, page + 1);
+//     if (replies.length !== 0) {
+//         moreButton.style.display = "";
+//     }
+//
+//     // 댓글 입력창을 비웁니다.
+//     document.getElementById("reply-content").value = "";
+// });
 
 replyService.getList(community_id, page, showList).then((text) => {
     ul.innerHTML = text;

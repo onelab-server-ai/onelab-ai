@@ -18,8 +18,6 @@ def check_comments(content):
 
     X_train = [content]
     prediction = model.predict(X_train)
-    print("들어옴!!!")
-    print(X_train)
 
     if prediction[0] == 1:
         # 추가 fit
