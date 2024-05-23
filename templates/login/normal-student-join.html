@@ -260,19 +260,19 @@
                                 </div>
                                 <!-- 배송 요청 사항쪽 -->
                                 <label class="DeliveryRequestMessage_deliveryRequestLabel" for="deliveryRequest">태그</label>
-
+                
                                 <input id="check-btn4" type="checkbox" class="DeliveryRequestMessage_container" name="check"/>
-
+                
                                 <label for="check-btn4" class="select-menu small menu_btn">
                                     <div class="select-menu-hidden-input-box">
-                                        <input type="text"  readonly />
+                                        <input type="text" readonly />
                                     </div>
                                     <div class="container">
                                         <span class="Textf"></span>
                                         <div class="select_menu_control menu">
                                             <div class="select_menu_container">
                                                 <div class="select-menu__placeholder">태그 선택</div>
-                                                <input class="dummyInput" name="tag-name" type="text" />
+                                                <input class="dummyInput" name="tag-name" type="text" readonly />
                                             </div>
                                             <div class="select_menu">
                                                 <span class="select_menu_indicator_separator"></span>
@@ -285,20 +285,14 @@
                                         </div>
                                     </div>
                                 </label>
-
+                
                                 <div class="select_menu_menu_list">
-                                    <div class="select_menu_option new_menu"  data-price=1000>
-                                        공부
-                                    </div>
-                                    <div class="select_menu_option sec_menu"  data-price=5000>
-                                        친목
-                                    </div>
-                                    <div class="select_menu_option sec_menu" data-price=10000>
-                                        수다
-                                    </div>
-                                    <div class="select_menu_option sec_menu" data-price=30000>공모전/대회</div>
+                                    <div class="select_menu_option new_menu" data-value="1">공부</div>
+                                    <div class="select_menu_option sec_menu" data-value="2">친목</div>
+                                    <div class="select_menu_option sec_menu" data-value="3">수다</div>
+                                    <div class="select_menu_option sec_menu" data-value="4">공모전/대회</div>
                                 </div>
-{#                                <input name="point" placeholder="예: 10000" type="text" class="Input_input input_d" id="input_detail" style="display: none" />#}
+                                <input type="hidden" name="tag" id="selected-tag-id" />
                             </div>
                         </div>
                     </section>
@@ -1264,6 +1258,7 @@
 {#    </script>#}
     <script>const csrf_token = `{{ csrf_token }}` </script>
     <script src="{% static 'member/js/login/colleges-student-normal-join.js' %}"></script>
+    
 {#    <script src="{% static 'member/js/login/payments.js' %}"></script>#}
 {#    <script src="{% static 'member/js/login/payContents.js' %}"></script>#}
 {#    <script src="{%  static 'member/js/login/payAPIs.js' %}"></script>#}

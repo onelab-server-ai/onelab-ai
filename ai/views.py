@@ -1,4 +1,8 @@
-from django.shortcuts import render
+import json
+import traceback
+
+from django.http import JsonResponse
+from django.shortcuts import render, redirect
 from django.views import View
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -8,9 +12,26 @@ import joblib
 import numpy as np
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+
+import badreply
+from ai.uil import check_comments
+from badreply.models import BadReply
+from community.models import Community
 from onelab.models import OneLab
 from member.models import Member
 import random
+
+import os
+from pathlib import Path
+
+import joblib
+from django.db import transaction
+from django.shortcuts import render
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from reply.models import Reply
+
 
 # class AiView(View):
 #     def get(self, request):
@@ -129,3 +150,132 @@ class PredictAPIView(APIView):
                 'predictions': predictions.tolist(),
                 'probabilities': probabilities.tolist()
             })
+
+class ReportReplyAPI(APIView):
+    def post(self, request):
+        data = json.loads(request.body)
+        reply_id = data.get('reply_id')
+
+        # 모델소환
+        model_file_path = os.path.join(Path(__file__).resolve().parent.parent, 'ai/reviewai.pkl')
+        model = joblib.load(model_file_path)
+
+        X_train = [reply_id]
+
+        # 추가 fit
+        transformed_X_train = model.named_steps['count_vectorizer'].transform(X_train)
+        model.named_steps['multinomial_NB'].partial_fit(transformed_X_train, [1])
+        joblib.dump(model, model_file_path)
+
+        # insert
+        BadReply.objects.create(comment=X_train[0], target=1)
+        Reply.objects.filter(id=reply_id).delete()
+
+        return Response({'reply_id': reply_id})
+
+class PostListView(View):
+    def get(self, request):
+        return render(request, 'community/community-list.html')
+
+
+# class ReviewPredictionAPI(APIView):
+#     def get(self, request):
+#         return render(request, 'community/community-detail.html')
+#     def post(self, request):
+#         #
+#         # 요청 데이터 확인
+#
+#         # reply_id = data.get('reply_id')
+#         # reply_content = data.get("reply-content")
+#         data = json.loads(request.body)
+#
+#         # community_id = data.get('community-id')
+#         # reply_content = data.get("reply-content")
+#         # data = request.POST
+#
+#         # data = {
+#         #     'reply_content': data['reply_content'],
+#         # }
+#         community_id = data.get('community-id')
+#         reply_content = data.get('reply_content')
+#
+#         print('fajskfsjkafjsa')
+#         print(reply_content)
+#         print(community_id)
+#
+#         result = check_comments(reply_content)
+#
+#         if result == 'comment':
+#             Reply.objects.filter(reply_content=reply_content).delete()
+#             # return Response(result)
+#             return Response({'result': result})
+#
+#         return Response({'result': result})
+
+
+# class ReviewPredictionAPI(APIView):
+#     def get(self, request):
+#         return render(request, 'community/community-detail.html')
+#
+#     def post(self, request):
+#         try:
+#             # 요청 데이터 확인
+#             # data = request.POST
+#             data = json.loads(request.body)
+#
+#             # 요청 데이터 출력
+#             print('Received request data:', data)
+#
+#             # community_id와 reply_content 가져오기
+#             community_id = data.get('community_id')
+#             reply_content = data.get('reply_content')
+#
+#             print(community_id, reply_content)
+#             print('Received community_id:', community_id)
+#             print('Received reply_content:', reply_content)
+#
+#             result = check_comments(reply_content)
+#
+#             if result == 'comment':
+#                 Reply.objects.filter(reply_content=reply_content).delete()
+#                 return Response({'result': result})
+#
+#             return Response({'result': result})
+#
+#         except Exception as e:
+#             print(f"Error: {e}")
+#             print(traceback.format_exc())
+#             return Response({'error': 'An error occurred'}, status=500)
+
+class ReviewPredictionAPI(APIView):
+    def post(self, request):
+        try:
+            data = json.loads(request.body)
+            community_id = data.get('community_id')
+
+            # Community와 Reply 조인하여 reply_content 가져오기
+            reply_queryset = Reply.objects.filter(community_id=community_id)
+
+
+
+            if reply_queryset.exists():
+                reply = reply_queryset.first()  # 첫 번째 댓글 가져오기
+                reply_content = reply.reply_content  # 댓글 내용 가져오기
+
+                print("들어왔네")
+                result = check_comments(reply_content)
+                print(result)
+                print(reply_content)
+
+                if result == 'comment':
+                    Reply.objects.filter(reply_content=reply_content).delete()
+                    return Response({'result': result})
+
+                return Response({'result': result})
+            else:
+                return Response({'result': 'No comments found for this community'}, status=404)
+
+        except Exception as e:
+            print(f"Error: {e}")
+            print(traceback.format_exc())
+            return Response({'error': 'An error occurred'}, status=500)

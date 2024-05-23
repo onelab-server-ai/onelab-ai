@@ -108,18 +108,20 @@
                                                         </a>
                                                     </div>
                                                     <!-- 로그인 되어있을 경우 댓글 창 시작 -->
-                                                    <div class="comment-user-wrapper-main">
-                                                        <div class="comment-write-form">
-                                                            <p class="comment-write-form-nickname">{{ request.session.member.member_name }}</p>
-                                                            <div class="comment-form-textarea">
-                                                                <textarea id="reply-content" name="reply-content" class="comment-textarea" rows="2" maxlength="2000" placeholder="댓글을 남겨주세요."></textarea>
-                                                                <textarea aria-hidden="true" readonly="" tabindex="-1" class="comment-textarea" style="visibility: hidden; position: absolute; overflow: hidden; height: 0px; top: 0px; left: 0px; transform: translateZ(0px); pointer-events: none;"></textarea>
+                                                    <form action="{% url 'community:detail' %}" enctype="multipart/form-data" method="post" >
+                                                        {% csrf_token %}
+                                                        <div class="comment-user-wrapper-main">
+                                                            <div class="comment-write-form">
+                                                                <p class="comment-write-form-nickname">{{ request.session.member.member_name }}</p>
+                                                                <div class="comment-form-textarea">
+                                                                    <textarea id="reply-content" name="reply-content" class="comment-textarea" rows="2" maxlength="2000" placeholder="댓글을 남겨주세요."></textarea>
+                                                                    <textarea aria-hidden="true" readonly="" tabindex="-1" class="comment-textarea" style="visibility: hidden; position: absolute; overflow: hidden; height: 0px; top: 0px; left: 0px; transform: translateZ(0px); pointer-events: none;"></textarea>
+                                                                </div>
+                                                                <div class="comment-form-bottom">
+                                                                    <span class="comment-form-count">0/2,000</span>
+                                                                </div>
                                                             </div>
-                                                            <div class="comment-form-bottom">
-                                                                <span class="comment-form-count">0/2,000</span>
-                                                            </div>
-                                                        </div>
-                                                        <div style="display: flex;">
+                                                            <div style="display: flex;">
                                                             <div class="comment-notice">
                                                                 <div class="comment-warning-msg">
                                                                     <div class="comment-info">
@@ -129,22 +131,25 @@
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                        <button class="comment-ok-btn" id="reply-write">
-                                                            <span class="comment-ok-text">등록</span>
-                                                        </button>
-                                                        </div>
+                                                        
+                                                            <button class="comment-ok-btn" id="reply-write" type="button">
+                                                                <span class="comment-ok-text">등록</span>
+                                                            </button>
+                                                        </form>
                                                     </div>
                                                 </div>
-                                                <!-- 로그인o 끝 -->
+                                                    
+                                            </div>
+                                            <!-- 로그인o 끝 -->
 
-                                                <!-- 로그인 안되어있을 경우 댓글 창 시작-->
-                                                <!-- <div class="comment-user-wrapper-main">
-                                                    <div class="comment-write-form">
-                                                        <p class="comment-write-form-nickname"></p>
-                                                        <div class="comment-disable-write-form">로그인이 필요합니다.</div>
-                                                    </div>
-                                                </div> -->
-                                                <!-- 로그인x 끝 -->
+                                            <!-- 로그인 안되어있을 경우 댓글 창 시작-->
+                                            <!-- <div class="comment-user-wrapper-main">
+                                                <div class="comment-write-form">
+                                                    <p class="comment-write-form-nickname"></p>
+                                                    <div class="comment-disable-write-form">로그인이 필요합니다.</div>
+                                                </div>
+                                            </div> -->
+                                            <!-- 로그인x 끝 -->
                                             <section id="replies-wrap">
                                                 <ul></ul>
                                                 <div class="reply-more-btn">
@@ -160,9 +165,10 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                     
+        
                 <!-- 푸터 -->
-            </div>
+           
             <div class="floating-buttons-container">
                 <button type="button" class="float-top-btn">
                     <svg viewBox="0 0 40 40" focusable="false" role="presentation" class="go-up-arrow-svg" aria-hidden="true">
@@ -205,7 +211,30 @@
                 </div>
             </div>
         </div>
+    </div>    
+        <!-- 프로필 설정 저장 눌렀을 때 나오는 모달 창 -->
+    <div id="confirm-modal-container">
+        <div id="confirm-modal"></div>
+        <section id="alertify-o" class="alertify-o alertify-o-alert">
+            <article class="alertify-o-inner">
+                <p
+                    class="alertify-o-message"
+                    style="font-size: 15px; padding-top: 2px"
+                >
+                    프로필 설정이 성공적으로 변경되었습니다.
+                </p>
+                <nav class="alertify-o-buttons">
+                    <button
+                        class="alertify-o-button alertify-o-button-ok"
+                        id="alertify-o-ok"
+                    >
+                        확인
+                    </button>
+                </nav>
+            </article>
+        </section>
     </div>
+   
 {% endblock %}
 
 
@@ -215,6 +244,15 @@
          const community_id = '{{ community.id }}'
          const memberId = '{{ request.session.member.id }}'
      </script>
+     
+{#     <script>#}
+{#    // 확인창의 확인을 눌렀을 때 기능#}
+{#    const confirmed_btn_modal = document.querySelector("#alertify-o-ok");#}
+{#    confirmed_btn_modal.addEventListener("click", ()=> {#}
+{#        console.log('click')#}
+{#        window.location.href='{% url 'myPage:main' %}'#}
+{#    })#}
+{#    </script>#}
      <script src="{% static 'reply/js/reply-module.js' %}"></script>
     <script src="{% static 'reply/js/reply.js' %}"></script>
     <script src="{% static '/community/js/community-detail.js' %}"></script>
