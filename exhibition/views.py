@@ -19,53 +19,6 @@ from school.models import School
 from university.models import University
 from tag.models import Tag
 
-
-
-# # OLD
-# class ExhibitionWriteView(View):
-#     def get(self, request):
-#         return render(request, 'exhibition/write.html')
-#
-#     @transaction.atomic
-#     def post(self, request):
-#         data = request.POST
-#         files = request.FILES
-#
-#         member_data = request.session.get('member', {})
-#         tag_id = member_data.get('tag')
-#         if tag_id:
-#             try:
-#                 tag_instance = Tag.objects.get(pk=tag_id)
-#                 member_data['tag'] = tag_instance
-#             except Tag.DoesNotExist:
-#                 member_data['tag'] = None
-#
-#         member = Member(**member_data)
-#         member.save()
-#         school = School.objects.get(member=member)
-#
-#         exhibition_data = {
-#             'exhibition_title': data['exhibition-title'],
-#             'exhibition_content': data['exhibition-content'],
-#             'school': school,
-#             'exhibition_url': data['exhibition-url']
-#         }
-#
-#         exhibition = Exhibition.objects.create(**exhibition_data)
-#
-#         for key, file in files.items():
-#             file_instance = File.objects.create(file_size=file.size)
-#
-#             if key == 'upload4':  # upload4 파일이면 download_path 필드에 저장
-#                 ExhibitionFile.objects.create(file=file_instance, path=None, download_path=file, preview=False,
-#                                               exhibition=exhibition)
-#             else:
-#                 ExhibitionFile.objects.create(file=file_instance, path=file, download_path=None, preview=key == 'upload1',
-#                                               exhibition=exhibition)
-#
-#         return redirect(exhibition.get_absolute_url())
-
-# # NEW
 class ExhibitionWriteView(View):
     def get(self, request):
         return render(request, 'exhibition/write.html')
@@ -114,60 +67,6 @@ class ExhibitionWriteView(View):
                                               exhibition=exhibition)
 
         return redirect(exhibition.get_absolute_url())
-
-# # NEW
-# class ExhibitionDetailView(View):
-#     def get(self, request):
-#         exhibition = Exhibition.objects.get(id=request.GET['id'])
-#         school = exhibition.school
-#         member = school.member
-#
-#         exhibition.exhibition_view_count += 1
-#         exhibition.save(update_fields=['exhibition_view_count'])
-#
-#         # 최근 전시 목록을 가져옵니다. 필요에 따라 쿼리를 조정하세요.
-#         exhibitions = Exhibition.objects.order_by('-created_date')[:4]
-#
-#         context = {
-#             'exhibition': exhibition,
-#             'exhibition_files': list(exhibition.exhibitionfile_set.all()),
-#             'member_name': member.member_name,
-#             'exhibitions': exhibitions  # 추가된 부분
-#         }
-#
-#         return render(request, 'exhibition/detail.html', context)
-#
-#     def post(self, request):
-#         data = request.POST
-#         member_id = request.session['member']['id']
-#         university = University.objects.get(member_id=member_id)
-#
-#         if university is None:
-#             return render(request, 'exhibition/detail.html', {'error': '대학생만 참여 가능합니다.'})
-#
-#         exhibition_id = data.get('id')
-#
-#         # 이미 참여한 공모전인지 확인
-#         existing_member = ExhibitionMember.objects.filter(university_id=university.member_id,
-#                                                           exhibition_id=exhibition_id).first()
-#         if existing_member:
-#             # 이미 참여한 경우에는 업데이트 시간만 변경
-#             from django.utils import timezone
-#             existing_member.updated_at = timezone.now()
-#             existing_member.save()
-#         else:
-#             # 참여한 공모전이 없는 경우에만 새로운 데이터 생성
-#             datas = {
-#                 'university_id': university.member_id,
-#                 'exhibition_id': exhibition_id,
-#                 'exhibition_member_status': 0
-#             }
-#             ExhibitionMember.objects.create(**datas)
-#
-#         return redirect('myPage:main')
-
-
-# NEW NEW
 
 class ExhibitionDetailView(View):
     def get(self, request):
@@ -323,7 +222,7 @@ def get_recommendations(exhibition_id, num_recommendations=4):
         f"{' '.join(ex.exhibition_title.split()[1:])} {' '.join(ex.exhibition_content.split()[1:5])}"
         for ex in exhibitions
     ]
-    #
+
     # # 전시회 내용을 수집합니다
     # content_list = [ex.exhibition_content for ex in exhibitions]
 
@@ -353,7 +252,7 @@ def get_recommendations(exhibition_id, num_recommendations=4):
     recommended_exhibitions = [exhibitions[i] for i in recommended_indices]
 
     # 유사도 점수를 소수점 4자리까지 출력
-    for i, score in sim_scores:
-        print(f"Exhibition ID: {exhibition_list[i].id}, Similarity Score: {score:.4f}")
+    # for i, score in sim_scores:
+    #     print(f"Exhibition ID: {exhibition_list[i].id}, Similarity Score: {score:.4f}")
 
     return recommended_exhibitions
