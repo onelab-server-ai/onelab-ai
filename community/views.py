@@ -9,6 +9,7 @@ from django.views import View
 from community.models import Community, CommunityFile
 from file.models import File
 from member.models import Member, MemberFile
+from tag.models import Tag
 
 
 class CommunityWriteView(View):
@@ -58,6 +59,18 @@ class CommunityWriteView(View):
 
 class CommunityDetailView(View):
     def get(self, request):
+        member_data = request.session.get('member')
+        if member_data:
+            tag_id = member_data.get('tag')
+            if tag_id:
+                try:
+                    tag_instance = Tag.objects.get(pk=tag_id)
+                    member_data['tag'] = tag_instance
+                except Tag.DoesNotExist:
+                    member_data['tag'] = None
+            member = Member(**member_data)
+        else:
+            member = None
         community = Community.objects.get(id=request.GET['id'])
         community.update_date = timezone.now()
         member = Member(**request.session['member'])
@@ -68,6 +81,7 @@ class CommunityDetailView(View):
             'community': community,
             'community_file': CommunityFile.objects.filter(community=community),
             'profile': profile,
+            'member': member
         }
 
         default_profile_url = 'https://static.wadiz.kr/assets/icon/profile-icon-1.png'
@@ -83,6 +97,18 @@ class CommunityDetailView(View):
 class CommunityListView(View):
     def get(self, request):
         member_id = request.session['member']['id']
+        member_data = request.session.get('member')
+        if member_data:
+            tag_id = member_data.get('tag')
+            if tag_id:
+                try:
+                    tag_instance = Tag.objects.get(pk=tag_id)
+                    member_data['tag'] = tag_instance
+                except Tag.DoesNotExist:
+                    member_data['tag'] = None
+            member = Member(**member_data)
+        else:
+            member = None
 
         # 페이지 번호 가져오기
         page = request.GET.get('page', 1)

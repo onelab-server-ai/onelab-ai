@@ -1,6 +1,6 @@
 from django.urls import path
 
-from ai.views import GetRecommendationsAPIView, PredictAPIView
+from ai.views import GetRecommendationsAPIView, PredictAPIView, ReportReplyAPI, ReviewPredictionAPI
 
 app_name = 'ai'
 
@@ -12,4 +12,6 @@ urlpatterns = [
     # path('detail/agree/api/', AlarmAgreeAPIView.as_view()),
     # path('detail/deny/api/', AlarmDenyAPIView.as_view()),
     # path('detail/cancel/api/', AlarmCancelAPIView.as_view())
+    path('review/', ReportReplyAPI.as_view(), name='review'),
+    path('reviewpredict/', ReviewPredictionAPI.as_view(), name='reviewpredict')
 ]

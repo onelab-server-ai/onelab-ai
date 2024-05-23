@@ -654,18 +654,35 @@ label.addEventListener("click", (e) => {
     dropdown.style.display = "block";
 });
 
-dropdowns.forEach((list) => {
-    dropdown.style.display = "none";
-    list.addEventListener("click", () => {
-        dropdown.style.display = "none";
-        text.innerHTML = list.innerHTML;
-        if (list === point) {
+// dropdowns.forEach((list) => {
+//     dropdown.style.display = "none";
+//     list.addEventListener("click", () => {
+//         dropdown.style.display = "none";
+//         text.innerHTML = list.innerHTML;
+//         if (list === point) {
+//             inputDetail.style.display = "block";
+//         } else if (list !== point) {
+//             inputDetail.style.display = "none";
+//         }
+//     });
+// });
+
+document.querySelectorAll('.select_menu_option').forEach(option => {
+    option.addEventListener('click', function() {
+        const selectedValue = this.getAttribute('data-value');
+        document.getElementById('selected-tag-id').value = selectedValue;
+        document.querySelector('.select-menu__placeholder').textContent = this.textContent;
+
+        // 선택된 값이 "point" 옵션인 경우에만 inputDetail을 보여줍니다.
+        const inputDetail = document.getElementById('input_detail');
+        if (selectedValue === "point") {
             inputDetail.style.display = "block";
-        } else if (list !== point) {
+        } else {
             inputDetail.style.display = "none";
         }
     });
 });
+
 
 
 // const kPay = document.querySelector("#payment_kakao");

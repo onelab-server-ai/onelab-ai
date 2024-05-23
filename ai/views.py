@@ -1,4 +1,7 @@
-from django.shortcuts import render
+import json
+
+from django.http import JsonResponse
+from django.shortcuts import render, redirect
 from django.views import View
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -8,9 +11,25 @@ import joblib
 import numpy as np
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+
+import badreply
+from ai.uil import check_comments
+from badreply.models import BadReply
 from onelab.models import OneLab
 from member.models import Member
 import random
+
+import os
+from pathlib import Path
+
+import joblib
+from django.db import transaction
+from django.shortcuts import render
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from reply.models import Reply
+
 
 # class AiView(View):
 #     def get(self, request):
@@ -129,3 +148,60 @@ class PredictAPIView(APIView):
                 'predictions': predictions.tolist(),
                 'probabilities': probabilities.tolist()
             })
+
+class ReportReplyAPI(APIView):
+    def post(self, request):
+        data = json.loads(request.body)
+        reply_id = data.get('reply_id')
+
+        # 모델소환
+        model_file_path = os.path.join(Path(__file__).resolve().parent.parent, 'ai/reviewai.pkl')
+        model = joblib.load(model_file_path)
+
+        X_train = [reply_id]
+
+        # 추가 fit
+        transformed_X_train = model.named_steps['count_vectorizer'].transform(X_train)
+        model.named_steps['multinomial_NB'].partial_fit(transformed_X_train, [1])
+        joblib.dump(model, model_file_path)
+
+        # insert
+        BadReply.objects.create(comment=X_train[0], target=1)
+        Reply.objects.filter(id=reply_id).delete()
+
+        return Response({'reply_id': reply_id})
+
+class PostListView(View):
+    def get(self, request):
+        return render(request, 'community/community-list.html')
+
+
+class ReviewPredictionAPI(APIView):
+    def get(self, request):
+        return render(request, 'community/community-detail.html')
+    def post(self, request):
+        #
+        # 요청 데이터 확인
+        data = request.POST
+        # data = json.loads(request.body)
+        # data = {
+        #     'reply_content': data['reply_content']
+        # }
+        print("Request data:", request.data)
+        print('들어옴')
+        # reply_id = data.get('reply_id')
+        # community_id = data.get('community-id')
+        reply_content = data.get("reply-content")
+        print("asjgkasj")
+        # print(reply_id)
+        print(reply_content)
+
+        result = check_comments(reply_content)
+
+        if result == 'comment':
+            Reply.objects.filter(reply_content=reply_content).delete()
+            # return Response(result)
+            print('삭제됨')
+
+        return Response(result)
+        #return redirect(f'community:detail${community_id}')

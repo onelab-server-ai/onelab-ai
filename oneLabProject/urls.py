@@ -27,7 +27,7 @@ urlpatterns = [
     path('upload/<path:file_path>/', ExhibitionFileDownloadView.as_view(), name='exhibition-down'),
     path('notification/', include('notification.urls')),
     path('', MainView.as_view(), name='main'),
-    path('ai/api/', include('ai.urls')),
+    path('ai/', include('ai.urls')),
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
