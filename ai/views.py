@@ -262,7 +262,6 @@ class ReviewPredictionAPI(APIView):
                 reply = reply_queryset.first()  # 첫 번째 댓글 가져오기
                 reply_content = reply.reply_content  # 댓글 내용 가져오기
 
-                print("들어왔네")
                 result = check_comments(reply_content)
                 print(result)
                 print(reply_content)

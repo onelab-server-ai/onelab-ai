@@ -230,6 +230,8 @@ writeButton.addEventListener("click", async (e) => {
         })
     });
 
+    replyContents.value = "";
+
     // 댓글 내용이 'comment'인 경우 처리하지 않음
     if (replyContents === 'comment') {
         // 필요에 따라 추가적인 작업 수행
@@ -240,7 +242,7 @@ writeButton.addEventListener("click", async (e) => {
     console.log(results.reply_content)
 
 
-    replyContents.value = "";
+
 });
 
 
