@@ -3,6 +3,7 @@ from django.utils import timezone
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from ai.uil import check_comments
 from member.models import Member
 from reply.models import Reply
 
@@ -16,8 +17,13 @@ class ReplyWriteAPI(APIView):
             'community_id': data['community_id'],
             'member_id': request.session['member']['id']
         }
+        result = check_comments(data['reply_content'])
+        print('result 들어옴')
+        print(result)
+        if result != 'comment':
+            Reply.objects.create(**data)
+            return Response('comment')
 
-        Reply.objects.create(**data)
         return Response('success')
 
 
